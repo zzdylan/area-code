@@ -9,18 +9,21 @@ class Code
 {
     protected $baseUrl = 'http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/';
     protected $dom;
+    protected $client;
     public function __construct()
     {
-        $dom = new Dom;
-        $this->dom = $dom;
+        $this->dom = new Dom;
+        $this->client = new Client();
     }
 
     public function get(){
-        $client = new Client();
+        $client = $this->client;
         $response = $client->get($this->getNewUrl());
-        echo $response->getBody();exit();
+        //$provinceHtml = $response->getBody();
+        $provinceHtml = iconv('GB2312', 'UTF-8', $response->getBody());
+        //echo $provinceHtml;exit();
         $dom = $this->dom;
-        $dom->load($this->getNewUrl());
+        $dom->load($provinceHtml);
         $html = $dom->outerHtml;
         echo $html;
     }
