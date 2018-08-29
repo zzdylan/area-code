@@ -8,8 +8,10 @@ use PHPHtmlParser\Dom;
 class Code
 {
     protected $baseUrl = 'http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/';
+    protected $newUrl;
     protected $dom;
     protected $client;
+    protected $data= [];
     public function __construct()
     {
         $this->dom = new Dom;
@@ -17,15 +19,63 @@ class Code
     }
 
     public function get(){
-        $client = $this->client;
-        $response = $client->get($this->getNewUrl());
+        $data = $this->getData();
+        file_put_contents('area.json', json_encode($data));
+    }
+
+
+    public function getData(){
+        $this->newUrl = $this->getNewUrl();
+        $response = $this->client->get($this->newUrl);
         //$provinceHtml = $response->getBody();
         $provinceHtml = iconv('GB2312', 'UTF-8', $response->getBody());
+        $provinceHtml = str_replace('gb2312','utf-8',$provinceHtml);
+        // echo $provinceHtml;exit();
         //echo $provinceHtml;exit();
         $dom = $this->dom;
         $dom->load($provinceHtml);
-        $html = $dom->outerHtml;
-        echo $html;
+        $provinceAArr = $dom->find('a');
+        $data = [];
+        foreach($provinceAArr as $key=>$provinceA){
+            $data[$key]['name'] = $provinceA->text;
+            $data[$key]['code'] = '';
+            $cityUrl = str_replace('index.html', $provinceA->getAttribute('href'), $this->newUrl);
+            $response = $this->client->get($cityUrl);
+            $cityHtml = iconv('GB2312', 'UTF-8', $response->getBody());
+            $cityHtml = str_replace('gb2312','utf-8',$cityHtml);
+            $this->dom->load($cityHtml);
+            $citytrArr = $this->dom->find('.citytr');
+            foreach($citytrArr as $cityKey=>$cityTr){
+                $this->dom->load($cityTr);
+                $cityAArr = $this->dom->find('a');
+                $cityCode = $cityAArr[0]->text;
+                $cityName = $cityAArr[1]->text;
+                $data[$key]['city'][$cityKey]['name'] = $cityName;
+                $data[$key]['city'][$cityKey]['code'] = $cityCode;
+                $countyUrl = str_replace('index.html', $cityAArr[0]->getAttribute('href'), $this->newUrl);
+                $response = $this->client->get($countyUrl);
+                // echo $cityUrl."\n\r";
+                // echo $countyUrl."\n\r";
+                $countyHtml = iconv('gbk', 'UTF-8', $response->getBody());
+                $countyHtml = str_replace('gb2312','utf-8',$countyHtml);
+                $this->dom->load($countyHtml);
+                $countytrArr = $this->dom->find('.countytr');
+                foreach($countytrArr as $countyKey=>$countyTr){
+                    $this->dom->load($countyTr);
+                    $countyAArr = $this->dom->find('a');
+                    if(!count($countyAArr)){
+                        $countyAArr = $this->dom->find('td');
+                    }
+                    $countyCode = $countyAArr[0]->text;
+                    $countyName = $countyAArr[1]->text;
+                    //echo $provinceA->text.' '.$cityName.' '.$countyName."\n\r";
+                    $data[$key]['city'][$cityKey]['county'][$countyKey]['name'] = $countyName;
+                    $data[$key]['city'][$cityKey]['county'][$countyKey]['code'] = $countyCode;
+                }
+            }
+        }
+        $this->data = $data;
+        return $this->data;
     }
 
 
@@ -37,7 +87,7 @@ class Code
         $li = $dom->find('li')[0];
         $dom->load($li);
         $a = $dom->find('a')[0];
-        $href = (string)$a->getAttribute('href');
+        $href = $a->getAttribute('href');
         return $href;
     }
 }
