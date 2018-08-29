@@ -1,0 +1,23 @@
+{
+    "name": "zzdylan/area-code",
+    "description": "get area code",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "zzdylan",
+            "email": "527844046@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+		"php": ">=5.6",
+		"guzzlehttp/guzzle": "~6.0",
+        "paquettg/php-html-parser":"1.7.*"
+	},
+	"autoload": {
+        "psr-4": {
+            "ZzDylan\\AreaCode\\": "src/ZzDylan/AreaCode"
+        }
+    }
+}
