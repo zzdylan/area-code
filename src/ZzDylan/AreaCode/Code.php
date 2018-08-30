@@ -53,7 +53,7 @@ class Code
                 $data[$key]['city'][$cityKey]['name'] = $cityName;
                 $data[$key]['city'][$cityKey]['code'] = substr($cityCode,0,6);
                 $provinceCode = str_pad(substr($cityCode,0,2),6,0,STR_PAD_RIGHT);
-                $data[$key][$key]['code'] = $provinceCode;
+                $data[$key]['code'] = $provinceCode;
                 $countyUrl = str_replace('index.html', $cityAArr[0]->getAttribute('href'), $this->newUrl);
                 $response = $this->client->get($countyUrl);
                 // echo $cityUrl."\n\r";
