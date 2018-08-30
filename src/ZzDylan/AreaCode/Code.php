@@ -18,20 +18,20 @@ class Code
         $this->client = new Client();
     }
 
-    public function get(){
+    public function save($path=''){
+        if(!$path){
+            $path = './area.json';
+        }
         $data = $this->getData();
-        file_put_contents('area.json', json_encode($data));
+        file_put_contents($path, json_encode($data));
     }
 
 
     public function getData(){
         $this->newUrl = $this->getNewUrl();
         $response = $this->client->get($this->newUrl);
-        //$provinceHtml = $response->getBody();
         $provinceHtml = iconv('GB2312', 'UTF-8', $response->getBody());
         $provinceHtml = str_replace('gb2312','utf-8',$provinceHtml);
-        // echo $provinceHtml;exit();
-        //echo $provinceHtml;exit();
         $dom = $this->dom;
         $dom->load($provinceHtml);
         $provinceAArr = $dom->find('a');
@@ -51,7 +51,7 @@ class Code
                 $cityCode = $cityAArr[0]->text;
                 $cityName = $cityAArr[1]->text;
                 $data[$key]['city'][$cityKey]['name'] = $cityName;
-                $data[$key]['city'][$cityKey]['code'] = $cityCode;
+                $data[$key]['city'][$cityKey]['code'] = substr($cityCode,0,6);
                 $countyUrl = str_replace('index.html', $cityAArr[0]->getAttribute('href'), $this->newUrl);
                 $response = $this->client->get($countyUrl);
                 // echo $cityUrl."\n\r";
@@ -68,9 +68,9 @@ class Code
                     }
                     $countyCode = $countyAArr[0]->text;
                     $countyName = $countyAArr[1]->text;
-                    //echo $provinceA->text.' '.$cityName.' '.$countyName."\n\r";
+                    echo $provinceA->text.' '.$cityName.' '.$countyName."\n\r";
                     $data[$key]['city'][$cityKey]['county'][$countyKey]['name'] = $countyName;
-                    $data[$key]['city'][$cityKey]['county'][$countyKey]['code'] = $countyCode;
+                    $data[$key]['city'][$cityKey]['county'][$countyKey]['code'] = substr($countyCode,0,6);
                 }
             }
         }
