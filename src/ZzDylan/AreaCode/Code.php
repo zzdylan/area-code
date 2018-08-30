@@ -62,9 +62,9 @@ class Code
                 $countyHtml = str_replace('gb2312','utf-8',$countyHtml);
                 $this->dom->load($countyHtml);
                 $countytrArr = $this->dom->find('.countytr');
-                if(!count($countytrArr)){
-                    $countytrArr = $this->dom->find('.towntr');
-                }
+//                if(!count($countytrArr)){
+//                    $countytrArr = $this->dom->find('.towntr');
+//                }
                 foreach($countytrArr as $countyKey=>$countyTr){
                     $this->dom->load($countyTr);
                     $countyAArr = $this->dom->find('a');
