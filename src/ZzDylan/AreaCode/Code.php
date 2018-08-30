@@ -51,8 +51,8 @@ class Code
                 $cityCode = $cityAArr[0]->text;
                 $cityName = $cityAArr[1]->text;
                 $data[$key]['city'][$cityKey]['name'] = $cityName;
-                $data[$key]['city'][$cityKey]['code'] = substr($cityCode,0,6);
-                $provinceCode = str_pad(substr($cityCode,0,2),6,0,STR_PAD_RIGHT);
+                $data[$key]['city'][$cityKey]['code'] = $cityCode;
+                $provinceCode = str_pad(substr($cityCode,0,2),12,0,STR_PAD_RIGHT);
                 $data[$key]['code'] = $provinceCode;
                 $countyUrl = str_replace('index.html', $cityAArr[0]->getAttribute('href'), $this->newUrl);
                 $response = $this->client->get($countyUrl);
@@ -75,7 +75,7 @@ class Code
                     $countyName = $countyAArr[1]->text;
                     echo $provinceA->text.' '.$cityName.' '.$countyName."\n\r";
                     $data[$key]['city'][$cityKey]['county'][$countyKey]['name'] = $countyName;
-                    $data[$key]['city'][$cityKey]['county'][$countyKey]['code'] = substr($countyCode,0,6);
+                    $data[$key]['city'][$cityKey]['county'][$countyKey]['code'] = $countyCode;
                 }
             }
             sleep(1);
