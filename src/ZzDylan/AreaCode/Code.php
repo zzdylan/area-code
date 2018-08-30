@@ -65,6 +65,7 @@ class Code
 //                if(!count($countytrArr)){
 //                    $countytrArr = $this->dom->find('.towntr');
 //                }
+                $data[$key]['city'][$cityKey]['county'] = [];
                 foreach($countytrArr as $countyKey=>$countyTr){
                     $this->dom->load($countyTr);
                     $countyAArr = $this->dom->find('a');
